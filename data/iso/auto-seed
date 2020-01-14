@@ -1,0 +1,64 @@
+#
+# Copyright (C) 2020 Tomasz Walczyk
+#
+# This software may be modified and distributed under the terms
+# of the MIT license. See the LICENSE file for details.
+#
+###########################################################
+
+### Localization:
+d-i debian-installer/locale string en_US.UTF-8
+d-i debian-installer/language string en_US:en
+d-i debian-installer/country string PL
+d-i keyboard-configuration/xkb-keymap select pl
+d-i keyboard-configuration/toggle select No toggling
+
+### Network configuration:
+d-i netcfg/choose_interface select auto
+d-i netcfg/wireless_wep string
+d-i hw-detect/load_firmware boolean true
+
+### Mirror settings:
+d-i mirror/country string manual
+d-i mirror/http/hostname string ftp.pl.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+d-i mirror/suite string stable
+
+### Clock and time zone setup:
+d-i clock-setup/utc boolean true
+d-i time/zone string Europe/Warsaw
+d-i clock-setup/ntp boolean true
+
+### Partitioning:
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm_nooverwrite boolean true
+d-i partman/confirm boolean true
+
+### Base system installation:
+d-i base-installer/install-recommends boolean true
+d-i base-installer/kernel/image string linux-image-amd64
+
+### Apt setup:
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+d-i apt-setup/use_mirror boolean true
+d-i apt-setup/cdrom/set-first boolean false
+d-i apt-setup/cdrom/set-next boolean false
+d-i apt-setup/cdrom/set-double boolean false
+
+### Package selection:
+d-i pkgsel/upgrade select full-upgrade
+popularity-contest popularity-contest/participate boolean false
+
+### Boot loader installation:
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean false
+
+### Finishing up the installation:
+d-i finish-install/reboot_in_progress note
