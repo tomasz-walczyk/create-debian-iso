@@ -13,7 +13,7 @@
   Script will create Debian installer from the latest minimal CD available.
   If -SeedFile argument was not specified then default seed file will be used.
   If -DataFile argument was not specified then default data file will be used.
-  ISO will be saved to the working directory unless -OutputFile was provided.
+  ISO will be saved to the script directory unless -OutputFile was provided.
 .INPUTS
   None.
 .OUTPUTS
