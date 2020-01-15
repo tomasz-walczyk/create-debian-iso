@@ -110,10 +110,10 @@ Description:
   ISO will be saved to the script directory unless --output-file was provided.
 
 Options:
-  --seed-file    <path> : Path to the seed file.
-  --data-file    <path> : Path to the data file.
-  --output-file  <path> : Path to the output file.
-  --help                : Display this help and exit.
+  --seed-file    <string> : Path to the seed file.
+  --data-file    <string> : Path to the data file.
+  --output-file  <string> : Path to the output file.
+  --help                  : Display this help and exit.
 EndOfHelp
 }
 
