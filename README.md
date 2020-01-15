@@ -6,13 +6,13 @@ ___
 git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
 cd create-debian-iso
 
-# Install required dependencies:
-sudo apt-get install genisoimage
+# Install dependencies:
+sudo apt-get install --assume-yes genisoimage
 
 # Get help:
 bash create-debian-iso.bash --help
 
-# Create Debian ISO using default settings:
+# Create Debian ISO:
 sudo bash create-debian-iso.bash
 ```
 #### MacOS
@@ -21,13 +21,13 @@ sudo bash create-debian-iso.bash
 git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
 cd create-debian-iso
 
-# Install required dependencies:
+# Install dependencies:
 brew install cdrtools
 
 # Get help:
 bash create-debian-iso.bash --help
 
-# Create Debian ISO using default settings:
+# Create Debian ISO:
 sudo bash create-debian-iso.bash
 ```
 #### Windows
@@ -36,13 +36,13 @@ sudo bash create-debian-iso.bash
 git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
 Set-Location create-debian-iso
 
-# Allow scripts execution:
+# Change execution policy:
 Set-ExecutionPolicy Bypass -Scope Process
 
 # Get help:
 Get-Help .\CreateDebianISO.ps1 -Full
 
-# Create Debian ISO using default settings:
+# Create Debian ISO:
 .\CreateDebianISO.ps1
 ```
 ___
