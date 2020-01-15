@@ -3,14 +3,13 @@ on:
   push:
     branches:
     - master
-  pull_request:
-    branches:
-    - master
-jobs:        
+jobs:
   test_linux:
     name: Test On Linux
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
       - name: Install Dependencies
         run: sudo apt-get install genisoimage
       - name: Create Debian ISO
@@ -19,6 +18,8 @@ jobs:
     name: Test On MacOS
     runs-on: macOS-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
       - name: Install Dependencies
         run: brew install cdrtools
       - name: Create Debian ISO
@@ -27,5 +28,7 @@ jobs:
     name: Test On Windows
     runs-on: windows-latest
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
     - name: Create Debian ISO
       run: powershell CreateDebianISO.ps1
