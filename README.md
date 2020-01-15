@@ -1,3 +1,5 @@
+![](https://github.com/tomasz-walczyk/create-debian-iso/workflows/CI/badge.svg?event=push)
+___
 Script for creating unattended Debian installer.
 ___
 #### Linux
