@@ -28,7 +28,7 @@ jobs:
     name: Test On Windows
     runs-on: windows-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-    - name: Create Debian ISO
-      run: powershell CreateDebianISO.ps1
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Create Debian ISO
+        run: powershell CreateDebianISO.ps1
