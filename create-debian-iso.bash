@@ -11,6 +11,12 @@ set -o errexit -o nounset -o pipefail
 
 ###########################################################
 
+readonly Platform=$(uname -s)
+readonly ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
+readonly TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
+
+###########################################################
+
 # Regular expression used for selecting correct Debian ISO file.
 readonly SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
 
@@ -19,14 +25,11 @@ readonly SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 
 ###########################################################
 
-readonly ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
-readonly TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
 readonly SourceISOFile="${TemporaryDir}/source.iso"
 readonly SourceISOData="${TemporaryDir}/source"
 readonly CustomISOFile="${TemporaryDir}/custom.iso"
 readonly CustomISOData="${TemporaryDir}/custom"
 readonly MacOSDeviceID="${TemporaryDir}/device"
-readonly Platform=$(uname -s)
 
 ###########################################################
 
