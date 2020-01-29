@@ -11,9 +11,15 @@ on:
   push:
     branches:
     - master
+    paths-ignore:
+    - LICENSE
+    - README.md
   pull_request:
     branches:
     - master
+    paths-ignore:
+    - LICENSE
+    - README.md
 jobs:
   test_linux:
     name: Test On Linux
