@@ -113,10 +113,11 @@ Description:
   ISO will be saved to the script directory unless --output-file was provided.
 
 Options:
-  --seed-file    <string> : Path to the seed file.
-  --data-file    <string> : Path to the data file.
-  --output-file  <string> : Path to the output file.
-  --help                  : Display this help and exit.
+  --seed-file=<string>   : Path to the seed file.
+  --data-file=<string>   : Path to the data file.
+  --output-file=<string> : Path to the output file.
+  --test                 : Test if platform is setup correctly and exit.
+  --help                 : Display this help and exit.
 EndOfHelp
 }
 
@@ -134,6 +135,7 @@ trap Failure HUP INT QUIT TERM
 while [[ $# -gt 0 ]]
 do
 case "${1}" in
+  --test) Test=1;;
   --help) Help; Success;;
   --seed-file=*) SeedFile=$(ValidateInputFile "${1%%=*}" "${1#*=}");;
   --seed-file) Failure "Invalid argument: \"${1}\" : Empty value!";;
@@ -166,6 +168,10 @@ elif [[ "${Platform}" == 'Linux' ]]; then
     || Failure 'Package "genisoimage" is not installed!'
 else
   Failure 'Platform is not supported!'
+fi
+
+if [[ "${Test:-0}" != 0 ]]; then
+  Success 'Platform is setup correctly!'
 fi
 
 #----------------------------------------------------------
