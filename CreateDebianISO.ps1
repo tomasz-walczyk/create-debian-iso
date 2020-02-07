@@ -46,7 +46,7 @@ param (
     return (Split-Path $Path | Test-Path -PathType Container) -and !(Test-Path $Path)
   })]
   [String]
-  $OutputFile=$(Join-Path $PWD $(Get-Date -UFormat "debian_%Y-%m-%d_%H-%M-%S.iso"))
+  $OutputFile=$(Join-Path $PWD $(Get-Date -UFormat "debian-%s.iso"))
 )
 
 ###########################################################

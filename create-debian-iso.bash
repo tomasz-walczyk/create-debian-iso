@@ -150,7 +150,7 @@ done
 
 readonly SeedFile=${SeedFile:-"${ScriptRoot}/data/iso/auto-seed"}
 readonly DataFile=${DataFile:-"${ScriptRoot}/data/iso/auto-data"}
-readonly OutputFile=${OutputFile:-"${PWD}/$(date '+debian_%Y-%m-%d_%H-%M-%S.iso')"}
+readonly OutputFile=${OutputFile:-"${PWD}/$(date '+debian-%s.iso')"}
 
 #----------------------------------------------------------
 # Check preconditions.
