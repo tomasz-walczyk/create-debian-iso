@@ -207,7 +207,7 @@ echo '[3/5] Updating ISO content.'
 #----------------------------------------------------------
 
 readonly ScriptISOData="${ScriptRoot}/data/iso"
-readonly BootFlags='auto=true priority=critical file=/cdrom/auto-seed'
+readonly BootFlags='auto=true file=/cdrom/auto-seed'
 
 pushd "${CustomISOData}"
 cp "${SeedFile}" 'auto-seed' && chmod 444 'auto-seed'
@@ -251,7 +251,7 @@ xorriso -as mkisofs \
   -boot-load-size 4 \
   -eltorito-catalog 'isolinux/boot.cat' \
   -eltorito-boot 'isolinux/isolinux.bin' \
-  -V "$(basename "${CustomISOFile}")" \
+  -volid "$(basename "${CustomISOFile}")" \
   -output "${CustomISOFile}" '.' >/dev/null 2>&1 \
     || Failure 'Cannot recreate ISO file!'
 popd

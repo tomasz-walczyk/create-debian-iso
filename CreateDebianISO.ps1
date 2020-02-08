@@ -106,7 +106,7 @@ try
   #------------------------------------------------------
 
   $ScriptISOData=Join-Path $PSScriptRoot 'data/iso'
-  $BootFlags='auto=true priority=critical file=/cdrom/auto-seed'
+  $BootFlags='auto=true file=/cdrom/auto-seed'
 
   Copy-Item $SeedFile $(Join-Path $CustomISOData 'auto-seed')
   Copy-Item $DataFile $(Join-Path $CustomISOData 'auto-data')
@@ -130,7 +130,16 @@ try
 
   Push-Location $CustomISOData
   $mkisofs=Join-Path $PSScriptRoot 'data/mkisofs/mkisofs.exe'
-  & $mkisofs -J -r -no-emul-boot -boot-info-table -boot-load-size 4 -c 'isolinux/boot.cat' -b 'isolinux/isolinux.bin' -o $CustomISOFile '.' 2>&1 > $Null
+  & $mkisofs `
+    -joliet `
+    -rational-rock `
+    -no-emul-boot `
+    -boot-info-table `
+    -boot-load-size 4 `
+    -eltorito-catalog 'isolinux/boot.cat' `
+    -eltorito-boot 'isolinux/isolinux.bin' `
+    -volid $(Split-Path $OutputFile -leaf) -output $CustomISOFile '.' 2>&1 > $Null
+
   if ($LastExitCode -ne 0) {
     throw 'Cannot recreate ISO file!'
   }
