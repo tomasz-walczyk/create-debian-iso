@@ -220,7 +220,7 @@ sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/boot/grub/grub.cfg" > 'grub.c
 chmod u-w 'grub.cfg'
 popd
 
-pushd "${CustomISOData}/isolinux/"
+pushd "${CustomISOData}/isolinux"
 chmod u+w 'isolinux.cfg'
 sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/isolinux/isolinux.cfg" > 'isolinux.cfg'
 chmod u-w 'isolinux.cfg'
@@ -251,9 +251,9 @@ xorriso -as mkisofs \
   -boot-load-size 4 \
   -eltorito-catalog 'isolinux/boot.cat' \
   -eltorito-boot 'isolinux/isolinux.bin' \
-  -V "$(basename "${CustomISOFile}")"
-  -output "${CustomISOFile}" \
-  '.' >/dev/null 2>&1 && chmod 400 "${CustomISOFile}"
+  -V "$(basename "${CustomISOFile}")" \
+  -output "${CustomISOFile}" '.' >/dev/null 2>&1 \
+    || Failure 'Cannot recreate ISO file!'
 popd
 
 #----------------------------------------------------------
