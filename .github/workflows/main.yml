@@ -28,9 +28,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Install Dependencies
-        run: sudo apt-get install genisoimage
+        run: sudo apt-get install xorriso
       - name: Create Debian ISO
-        run: sudo bash create-debian-iso.bash
+        run: bash create-debian-iso.bash
   test_macos:
     name: Test On MacOS
     runs-on: macOS-latest
@@ -38,9 +38,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Install Dependencies
-        run: brew install cdrtools
+        run: brew install xorriso
       - name: Create Debian ISO
-        run: sudo bash create-debian-iso.bash
+        run: bash create-debian-iso.bash
   test_windows:
     name: Test On Windows
     runs-on: windows-latest

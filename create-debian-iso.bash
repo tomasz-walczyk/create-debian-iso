@@ -65,12 +65,7 @@ Success() {
 
 Clean() {
   if [[ -d "${TemporaryDir}" ]]; then
-    if mount | grep -q "${SourceISOData}"; then
-      umount "${SourceISOData}"
-    fi
-    if [[ "${Platform}" == 'Darwin' ]] && [[ -e "${MacOSDeviceID}" ]]; then
-      hdiutil detach -quiet "$(cat "${MacOSDeviceID}")"
-    fi
+    chmod -R u+w "${TemporaryDir}"
     rm -R "${TemporaryDir}"
   fi
 }
@@ -150,22 +145,14 @@ done
 
 readonly SeedFile=${SeedFile:-"${ScriptRoot}/data/iso/auto-seed"}
 readonly DataFile=${DataFile:-"${ScriptRoot}/data/iso/auto-data"}
-readonly OutputFile=${OutputFile:-"${PWD}/$(date '+debian-%s.iso')"}
+readonly OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
 
 #----------------------------------------------------------
 # Check preconditions.
 #----------------------------------------------------------
 
-if [[ "${EUID}" != 0 ]]; then
-  Failure 'You need to run this script as root!'
-fi
-
-if [[ "${Platform}" == 'Darwin' ]]; then
-  command -v 'mkisofs' >/dev/null 2>&1 \
-    || Failure 'Package "cdrtools" is not installed!'
-elif [[ "${Platform}" == 'Linux' ]]; then
-  command -v 'genisoimage' >/dev/null 2>&1 \
-    || Failure 'Package "genisoimage" is not installed!'
+if [[ "${Platform}" == 'Darwin' ]] || [[ "${Platform}" == 'Linux' ]]; then
+  command -v 'xorriso' >/dev/null 2>&1 || Failure 'Program "xorriso" is not installed!'
 else
   Failure 'Platform is not supported!'
 fi
@@ -191,14 +178,14 @@ readonly SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPatter
 
 if [[ "${Platform}" == 'Darwin' ]]; then
   curl -s -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}" \
-    || Failure 'ISO download failed!'
+    && chmod 400 "${SourceISOFile}" || Failure 'ISO download failed!'
 
   if [[ "${SourceISOHash}" != "$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')" ]]; then
     Failure 'Downloaded ISO is corrupted!'
   fi
 else
   wget -q -O "${SourceISOFile}" "${SourceISOURL}${SourceISOName}" \
-    || Failure 'ISO download failed!'
+    && chmod 400 "${SourceISOFile}" || Failure 'ISO download failed!'
 
   if [[ "${SourceISOHash}" != "$(sha512sum "${SourceISOFile}" | awk '{print $1}')" ]]; then
     Failure 'Downloaded ISO is corrupted!'
@@ -212,38 +199,42 @@ echo " - Source ISO Hash : ${SourceISOHash}"
 echo '[2/5] Extracting ISO content.'
 #----------------------------------------------------------
 
-mkdir -p "${SourceISOData}" "${CustomISOData}"
-if [[ "${Platform}" == 'Darwin' ]]; then
-  hdiutil attach -readonly -nomount "${SourceISOFile}" \
-    | grep 'Apple_partition_scheme' | awk '{print $1}' > "${MacOSDeviceID}"
-  mount -o rdonly -t cd9660 "$(cat "${MacOSDeviceID}")" "${SourceISOData}"
-else
-  mount -r -o 'loop' "${SourceISOFile}" "${SourceISOData}"
-fi
-cp -p -R "${SourceISOData}/"* "${CustomISOData}"
+mkdir -m 700 -p "${CustomISOData}"
+xorriso -osirrox on -indev "${SourceISOFile}" -extract / "${CustomISOData}" >/dev/null 2>&1
 
 #----------------------------------------------------------
 echo '[3/5] Updating ISO content.'
 #----------------------------------------------------------
 
 readonly ScriptISOData="${ScriptRoot}/data/iso"
-readonly BootFlags='auto=true file=/cdrom/auto-seed'
+readonly BootFlags='auto=true priority=critical file=/cdrom/auto-seed'
 
-cp "${SeedFile}" "${CustomISOData}/auto-seed"
-cp "${DataFile}" "${CustomISOData}/auto-data"
+pushd "${CustomISOData}"
+cp "${SeedFile}" 'auto-seed' && chmod 444 'auto-seed'
+cp "${DataFile}" 'auto-data' && chmod 444 'auto-data'
+popd
 
-sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/boot/grub/grub.cfg" \
-  > "${CustomISOData}/boot/grub/grub.cfg"
-sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/isolinux/isolinux.cfg" \
-  > "${CustomISOData}/isolinux/isolinux.cfg"
+pushd "${CustomISOData}/boot/grub"
+chmod u+w 'grub.cfg'
+sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/boot/grub/grub.cfg" > 'grub.cfg'
+chmod u-w 'grub.cfg'
+popd
+
+pushd "${CustomISOData}/isolinux/"
+chmod u+w 'isolinux.cfg'
+sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/isolinux/isolinux.cfg" > 'isolinux.cfg'
+chmod u-w 'isolinux.cfg'
+popd
 
 pushd "${CustomISOData}"
 rm 'debian'
+chmod u+w 'md5sum.txt'
 if [[ "${Platform}" == 'Darwin' ]]; then
   md5 -r $(find . -type f -follow) > 'md5sum.txt'
 else
   md5sum $(find . -type f -follow) > 'md5sum.txt'
 fi
+chmod u-w 'md5sum.txt'
 ln -s '.' 'debian'
 popd
 
@@ -252,31 +243,17 @@ echo '[4/5] Recreating ISO file.'
 #----------------------------------------------------------
 
 pushd "${CustomISOData}"
-if [[ "${Platform}" == 'Darwin' ]]; then
-  mkisofs \
-    -quiet \
-    -joliet \
-    -rational-rock \
-    -no-emul-boot \
-    -boot-info-table \
-    -boot-load-size 4 \
-    -eltorito-catalog 'isolinux/boot.cat' \
-    -eltorito-boot 'isolinux/isolinux.bin' \
-    -output "${CustomISOFile}" \
-    '.'
-else
-  genisoimage \
-    -quiet \
-    -joliet \
-    -rational-rock \
-    -no-emul-boot \
-    -boot-info-table \
-    -boot-load-size 4 \
-    -eltorito-catalog 'isolinux/boot.cat' \
-    -eltorito-boot 'isolinux/isolinux.bin' \
-    -output "${CustomISOFile}" \
-    '.'
-fi
+xorriso -as mkisofs \
+  -joliet \
+  -rational-rock \
+  -no-emul-boot \
+  -boot-info-table \
+  -boot-load-size 4 \
+  -eltorito-catalog 'isolinux/boot.cat' \
+  -eltorito-boot 'isolinux/isolinux.bin' \
+  -V "$(basename "${CustomISOFile}")"
+  -output "${CustomISOFile}" \
+  '.' >/dev/null 2>&1 && chmod 400 "${CustomISOFile}"
 popd
 
 #----------------------------------------------------------

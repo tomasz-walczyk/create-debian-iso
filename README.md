@@ -9,13 +9,13 @@ git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
 cd create-debian-iso
 
 # Install dependencies:
-sudo apt-get install --assume-yes genisoimage
+sudo apt-get install --assume-yes xorriso
 
 # Get help:
 bash create-debian-iso.bash --help
 
 # Create Debian ISO:
-sudo bash create-debian-iso.bash
+bash create-debian-iso.bash
 ```
 #### MacOS
 ```bash
@@ -24,13 +24,13 @@ git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
 cd create-debian-iso
 
 # Install dependencies:
-brew install cdrtools
+brew install xorriso
 
 # Get help:
 bash create-debian-iso.bash --help
 
 # Create Debian ISO:
-sudo bash create-debian-iso.bash
+bash create-debian-iso.bash
 ```
 #### Windows
 ```powershell

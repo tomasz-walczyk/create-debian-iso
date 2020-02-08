@@ -46,7 +46,7 @@ param (
     return (Split-Path $Path | Test-Path -PathType Container) -and !(Test-Path $Path)
   })]
   [String]
-  $OutputFile=$(Join-Path $PWD $(Get-Date -UFormat "debian-%s.iso"))
+  $OutputFile=$(Join-Path $PWD $(Get-Date -UFormat "auto-debian-%s.iso"))
 )
 
 ###########################################################
@@ -106,7 +106,7 @@ try
   #------------------------------------------------------
 
   $ScriptISOData=Join-Path $PSScriptRoot 'data/iso'
-  $BootFlags='auto=true file=/cdrom/auto-seed'
+  $BootFlags='auto=true priority=critical file=/cdrom/auto-seed'
 
   Copy-Item $SeedFile $(Join-Path $CustomISOData 'auto-seed')
   Copy-Item $DataFile $(Join-Path $CustomISOData 'auto-data')
