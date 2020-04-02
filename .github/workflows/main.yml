@@ -27,10 +27,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Install Dependencies
-        run: sudo apt-get install xorriso shellcheck
       - name: Run ShellCheck
-        run: shellcheck --shell=bash --severity=style --enable=all $(find . -name "*.bash")
+        run: |
+          curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.aarch64.tar.xz && tar -xzf shellcheck-stable.tar.xz
+          shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
+      - name: Install Dependencies
+        run: sudo apt-get install xorriso
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_macos:
@@ -39,10 +41,12 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+      - name: Run ShellCheck
+      run: |
+        curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.darwin.x86_64.tar.xz && tar -xzf shellcheck-stable.tar.xz
+        shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
         run: brew install xorriso shellcheck
-      - name: Run ShellCheck
-        run: shellcheck --shell=bash --severity=style --enable=all $(find . -name "*.bash")
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_windows:
