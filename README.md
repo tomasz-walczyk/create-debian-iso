@@ -11,9 +11,6 @@ cd create-debian-iso
 # Install dependencies:
 sudo apt-get install --assume-yes xorriso
 
-# Get help:
-bash create-debian-iso.bash --help
-
 # Create Debian ISO:
 bash create-debian-iso.bash
 ```
@@ -26,9 +23,6 @@ cd create-debian-iso
 # Install dependencies:
 brew install xorriso
 
-# Get help:
-bash create-debian-iso.bash --help
-
 # Create Debian ISO:
 bash create-debian-iso.bash
 ```
@@ -40,9 +34,6 @@ Set-Location create-debian-iso
 
 # Change execution policy:
 Set-ExecutionPolicy Bypass -Scope Process
-
-# Get help:
-Get-Help .\CreateDebianISO.ps1 -Full
 
 # Create Debian ISO:
 .\CreateDebianISO.ps1
