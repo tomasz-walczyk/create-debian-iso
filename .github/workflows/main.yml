@@ -42,9 +42,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Run ShellCheck
-      run: |
-        curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.darwin.x86_64.tar.xz && tar -xzf shellcheck-stable.tar.xz
-        shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
+        run: |
+          curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.darwin.x86_64.tar.xz && tar -xzf shellcheck-stable.tar.xz
+          shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
         run: brew install xorriso shellcheck
       - name: Create Debian ISO
