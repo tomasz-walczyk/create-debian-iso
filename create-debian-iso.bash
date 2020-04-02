@@ -26,10 +26,8 @@ readonly SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd
 ###########################################################
 
 readonly SourceISOFile="${TemporaryDir}/source.iso"
-readonly SourceISOData="${TemporaryDir}/source"
 readonly CustomISOFile="${TemporaryDir}/custom.iso"
 readonly CustomISOData="${TemporaryDir}/custom"
-readonly MacOSDeviceID="${TemporaryDir}/device"
 
 ###########################################################
 
@@ -74,7 +72,11 @@ Clean() {
 
 ValidateInputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
-  [[ "${2:0:1}" != '/' ]] && { local -r Path="${PWD}/${2}"; } || { local -r Path="${2}"; }
+  if [[ "${2:0:1}" != '/' ]]; then
+    local -r Path="${PWD}/${2}"
+  else
+    local -r Path="${2}"
+  fi
   [[ ! -f "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" does not exists!"
   [[ ! -r "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" is not readable!"
   echo -n "${Path}"
@@ -84,7 +86,11 @@ ValidateInputFile() {
 
 ValidatOutputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
-  [[ "${2:0:1}" != '/' ]] && { local -r Path="${PWD}/${2}"; } || { local -r Path="${2}"; }
+  if [[ "${2:0:1}" != '/' ]]; then
+    local -r Path="${PWD}/${2}"
+  else
+    local -r Path="${2}"
+  fi
   [[ -e "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" already exists!"
   [[ ! -e "$(dirname "${Path}")" ]] && Failure "Invalid argument: \"${1}\" : Directory \"$(dirname "${Path}")\" does not exists!"
   [[ ! -w "$(dirname "${Path}")" ]] && Failure "Invalid argument: \"${1}\" : Directory \"$(dirname "${Path}")\" is not writable!"
@@ -177,16 +183,20 @@ readonly SourceISOHash=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPatter
 readonly SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
 
 if [[ "${Platform}" == 'Darwin' ]]; then
-  curl -s -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}" \
-    && chmod 400 "${SourceISOFile}" || Failure 'ISO download failed!'
-
+  if curl -s -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
+    chmod 400 "${SourceISOFile}"
+  else
+    Failure 'ISO download failed!'
+  fi
   if [[ "${SourceISOHash}" != "$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')" ]]; then
     Failure 'Downloaded ISO is corrupted!'
   fi
 else
-  wget -q -O "${SourceISOFile}" "${SourceISOURL}${SourceISOName}" \
-    && chmod 400 "${SourceISOFile}" || Failure 'ISO download failed!'
-
+  if wget -q -O "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
+    chmod 400 "${SourceISOFile}"
+  else
+    Failure 'ISO download failed!'
+  fi
   if [[ "${SourceISOHash}" != "$(sha512sum "${SourceISOFile}" | awk '{print $1}')" ]]; then
     Failure 'Downloaded ISO is corrupted!'
   fi
@@ -199,7 +209,7 @@ echo " - Source ISO Hash : ${SourceISOHash}"
 echo '[2/5] Extracting ISO content.'
 #----------------------------------------------------------
 
-mkdir -m 700 -p "${CustomISOData}"
+mkdir -p "${CustomISOData}" && chmod 700 "${CustomISOData}"
 xorriso -osirrox on -indev "${SourceISOFile}" -extract / "${CustomISOData}" >/dev/null 2>&1
 
 #----------------------------------------------------------
