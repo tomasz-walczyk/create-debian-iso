@@ -32,7 +32,7 @@ jobs:
           curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz && tar -xf shellcheck-stable.tar.xz
           shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
-        run: sudo apt-get install xorriso
+        run: sudo apt-get install --assume-yes xorriso
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_macos:
