@@ -28,7 +28,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Install Dependencies
-        run: sudo apt-get install xorriso
+        run: sudo apt-get install xorriso shellcheck
+      - name: Run ShellCheck
+        run: shellcheck --shell=bash --severity=style --enable=all $(find . -name "*.bash")
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_macos:
@@ -38,7 +40,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Install Dependencies
-        run: brew install xorriso
+        run: brew install xorriso shellcheck
+      - name: Run ShellCheck
+        run: shellcheck --shell=bash --severity=style --enable=all $(find . -name "*.bash")
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_windows:

@@ -237,13 +237,16 @@ chmod u-w 'isolinux.cfg'
 popd
 
 pushd "${CustomISOData}"
-rm 'debian'
 chmod u+w 'md5sum.txt'
-if [[ "${Platform}" == 'Darwin' ]]; then
-  md5 -r $(find . -type f -follow) > 'md5sum.txt'
-else
-  md5sum $(find . -type f -follow) > 'md5sum.txt'
-fi
+rm 'debian' 'md5sum.txt'
+find . -type f -follow | while IFS='' read -r File
+do
+  if [[ "${Platform}" == 'Darwin' ]]; then
+    md5 -r "${File}" >> 'md5sum.txt'
+  else
+    md5sum "${File}" >> 'md5sum.txt'
+  fi
+done
 chmod u-w 'md5sum.txt'
 ln -s '.' 'debian'
 popd
