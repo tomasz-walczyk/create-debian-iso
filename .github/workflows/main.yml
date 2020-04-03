@@ -46,7 +46,7 @@ jobs:
           curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.darwin.x86_64.tar.xz && tar -xf shellcheck-stable.tar.xz
           shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
-        run: brew install xorriso shellcheck
+        run: brew install xorriso
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
   test_windows:
