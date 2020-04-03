@@ -36,7 +36,7 @@ Set-Location create-debian-iso
 Set-ExecutionPolicy Bypass -Scope Process
 
 # Create Debian ISO:
-.\CreateDebianISO.ps1
+powershell .\CreateDebianISO.ps1
 ```
 ___
 *Copyright (C) 2020 Tomasz Walczyk*<br><br>

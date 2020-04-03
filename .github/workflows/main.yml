@@ -58,6 +58,6 @@ jobs:
       - name: Run Static Analyzer
         run: |
           Install-Module -Name PSScriptAnalyzer -Force
-          Invoke-ScriptAnalyzer -Path CreateDebianISO.ps1 -EnableExit
+          Invoke-ScriptAnalyzer -Path .\CreateDebianISO.ps1 -EnableExit
       - name: Create Debian ISO
-        run: powershell CreateDebianISO.ps1
+        run: powershell .\CreateDebianISO.ps1
