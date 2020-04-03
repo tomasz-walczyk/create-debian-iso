@@ -27,33 +27,37 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Run ShellCheck
+      - name: Run Static Analyzer
         run: |
           curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz && tar -xf shellcheck-stable.tar.xz
           shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
         run: sudo apt-get install --assume-yes xorriso
       - name: Create Debian ISO
-        run: bash create-debian-iso.bash
+        run: create-debian-iso.bash
   test_macos:
     name: Test On MacOS
     runs-on: macOS-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Run ShellCheck
+      - name: Run Static Analyzer
         run: |
           curl -s -L -o shellcheck-stable.tar.xz https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.darwin.x86_64.tar.xz && tar -xf shellcheck-stable.tar.xz
           shellcheck-stable/shellcheck --shell=bash --severity=style --enable=all create-debian-iso.bash
       - name: Install Dependencies
         run: brew install xorriso shellcheck
       - name: Create Debian ISO
-        run: bash create-debian-iso.bash
+        run: create-debian-iso.bash
   test_windows:
     name: Test On Windows
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+      - name: Run Static Analyzer
+        run: |
+          Install-Module -Name PSScriptAnalyzer
+          Invoke-ScriptAnalyzer -Path CreateDebianISO.ps1 -EnableExit
       - name: Create Debian ISO
-        run: powershell .\CreateDebianISO.ps1
+        run: CreateDebianISO.ps1
