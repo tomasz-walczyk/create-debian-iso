@@ -73,7 +73,7 @@ $CustomISOData=Join-Path ${TemporaryDir} 'custom'
 try
 {
   #------------------------------------------------------
-  Write-Host '[1/5] Downloading ISO file.'
+  Write-Output '[1/5] Downloading ISO file.'
   #------------------------------------------------------
 
   $SourceISOInfo=$(New-Object System.Net.WebClient).DownloadString($SourceISOURL + 'SHA512SUMS')
@@ -87,11 +87,11 @@ try
     throw 'Downloaded ISO is corrupted!'
   }
 
-  Write-Host " - Source ISO File : $SourceISOURL$SourceISOName"
-  Write-Host " - Source ISO Hash : $SourceISOHash"
+  Write-Output " - Source ISO File : $SourceISOURL$SourceISOName"
+  Write-Output " - Source ISO Hash : $SourceISOHash"
 
   #------------------------------------------------------
-  Write-Host '[2/5] Extracting ISO content.'
+  Write-Output '[2/5] Extracting ISO content.'
   #------------------------------------------------------
 
   $SourceISOData=$(Mount-DiskImage $SourceISOFile -PassThru | Get-Volume).DriveLetter
@@ -102,7 +102,7 @@ try
   Dismount-DiskImage $SourceISOFile | Out-Null
 
   #------------------------------------------------------
-  Write-Host '[3/5] Updating ISO content.'
+  Write-Output '[3/5] Updating ISO content.'
   #------------------------------------------------------
 
   $ScriptISOData=Join-Path $PSScriptRoot 'data/iso'
@@ -125,7 +125,7 @@ try
   }
 
   #------------------------------------------------------
-  Write-Host '[4/5] Recreating ISO file.'
+  Write-Output '[4/5] Recreating ISO file.'
   #------------------------------------------------------
 
   Push-Location $CustomISOData
@@ -146,7 +146,7 @@ try
   Pop-Location
 
   #------------------------------------------------------
-  Write-Host '[5/5] Saving ISO file.'
+  Write-Output '[5/5] Saving ISO file.'
   #------------------------------------------------------
 
   if (-not $(Move-Item $CustomISOFile $OutputFile -PassThru)) {
@@ -154,9 +154,9 @@ try
   }
 
   $OutputHash=$(Get-FileHash $OutputFile -Algorithm SHA512).Hash.ToLower()
-  Write-Host " - Output ISO File : $OutputFile"
-  Write-Host " - Output ISO Hash : $OutputHash"
-  Write-Host 'Done!'
+  Write-Output " - Output ISO File : $OutputFile"
+  Write-Output " - Output ISO Hash : $OutputHash"
+  Write-Output 'Done!'
 }
 catch
 {
