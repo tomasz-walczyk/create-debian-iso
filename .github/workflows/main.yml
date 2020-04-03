@@ -34,7 +34,7 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get install --assume-yes xorriso
       - name: Create Debian ISO
-        run: create-debian-iso.bash
+        run: bash create-debian-iso.bash
   test_macos:
     name: Test On MacOS
     runs-on: macOS-latest
@@ -48,7 +48,7 @@ jobs:
       - name: Install Dependencies
         run: brew install xorriso shellcheck
       - name: Create Debian ISO
-        run: create-debian-iso.bash
+        run: bash create-debian-iso.bash
   test_windows:
     name: Test On Windows
     runs-on: windows-latest
@@ -60,4 +60,4 @@ jobs:
           Install-Module -Name PSScriptAnalyzer
           Invoke-ScriptAnalyzer -Path CreateDebianISO.ps1 -EnableExit
       - name: Create Debian ISO
-        run: CreateDebianISO.ps1
+        run: powershell CreateDebianISO.ps1
