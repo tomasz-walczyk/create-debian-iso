@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2020 Tomasz Walczyk
+# Copyright (C) 2020-2021 Tomasz Walczyk
 #
 # This software may be modified and distributed under the terms
 # of the MIT license. See the LICENSE file for details.

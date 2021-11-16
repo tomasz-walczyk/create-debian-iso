@@ -39,6 +39,6 @@ Set-ExecutionPolicy Bypass -Scope Process
 powershell .\CreateDebianISO.ps1
 ```
 ___
-*Copyright (C) 2020 Tomasz Walczyk*<br><br>
+*Copyright (C) 2020-2021 Tomasz Walczyk*<br><br>
 *This software may be modified and distributed under the terms of the MIT license.*<br>
 *See the [LICENSE](LICENSE) file for details.*<br>
