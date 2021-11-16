@@ -128,7 +128,6 @@ Options:
   --test               : Test if platform is setup correctly and exit.
   --help               : Display this help and exit.
 EndOfHelp
-Success
 }
 
 ############################################################
@@ -145,8 +144,8 @@ trap Failure HUP INT QUIT TERM
 while [[ $# -gt 0 ]]
 do
 case "${1}" in
-  --help) Help;;
-  --test) Test=1;;
+  --help) Help; Success;;
+  --test) declare -r Test=1;;
   --seed-file=*) SeedFile=${1#*=}; ValidateInputFile "${1%%=*}" "${SeedFile}";;
   --seed-file) SeedFile=${2-''}; ValidateInputFile "${1}" "${SeedFile}";;
   --data-file=*) DataFile=${1#*=}; ValidateInputFile "${1%%=*}" "${DataFile}";;
