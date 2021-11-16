@@ -120,6 +120,7 @@ Options:
   --test                 : Test if platform is setup correctly and exit.
   --help                 : Display this help and exit.
 EndOfHelp
+Success
 }
 
 ############################################################
@@ -136,14 +137,14 @@ trap Failure HUP INT QUIT TERM
 while [[ $# -gt 0 ]]
 do
 case "${1}" in
+  --help) Help;;
   --test) Test=1;;
-  --help) Help; Success;;
-  --seed-file=*) SeedFile=$(ValidateInputFile "${1%%=*}" "${1#*=}");;
-  --seed-file) Failure "Invalid argument: \"${1}\" : Empty value!";;
-  --data-file=*) DataFile=$(ValidateInputFile "${1%%=*}" "${1#*=}");;
-  --data-file) Failure "Invalid argument: \"${1}\" : Empty value!";;
-  --output-file=*) OutputFile=$(ValidatOutputFile "${1%%=*}" "${1#*=}");;
-  --output-file) Failure "Invalid argument: \"${1}\" : Empty value!";;
+  --seed-file=*) SeedFile=${1#*=}; ValidateInputFile "${1%%=*}" "${SeedFile}";;
+  --seed-file) SeedFile=${2-''}; ValidateInputFile "${1}" "${SeedFile}";;
+  --data-file=*) DataFile=${1#*=}; ValidateInputFile "${1%%=*}" "${DataFile}";;
+  --data-file) DataFile=${2-''}; ValidateInputFile "${1}" "${DataFile}";;
+  --output-file=*) OutputFile=${1#*=}; ValidatOutputFile "${1%%=*}" "${OutputFile}";;
+  --output-file) OutputFile=${2-''}; ValidatOutputFile "${1}" "${OutputFile}";;
   *) Failure "Invalid argument: \"${1}\" : Not supported!";;
 esac
 shift
