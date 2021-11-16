@@ -4,7 +4,7 @@
 # This software may be modified and distributed under the terms
 # of the MIT license. See the LICENSE file for details.
 #
-###########################################################
+############################################################
 
 <#
 .SYNOPSIS
@@ -49,11 +49,11 @@ param (
   $OutputFile=$(Join-Path $PWD $(Get-Date -UFormat "auto-debian-%s.iso"))
 )
 
-###########################################################
+############################################################
 
 Set-StrictMode -Version Latest
 
-###########################################################
+############################################################
 
 # Regular expression used for selecting correct Debian ISO file.
 $SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
@@ -61,20 +61,20 @@ $SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
 # URL pointing to the directory from which Debian ISO should be downloaded.
 $SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/'
 
-###########################################################
+############################################################
 
 $TemporaryDir=New-Item -Type Directory -Path $(Join-Path $ENV:TEMP $(New-Guid))
 $SourceISOFile=Join-Path ${TemporaryDir} 'source.iso'
 $CustomISOFile=Join-Path ${TemporaryDir} 'custom.iso'
 $CustomISOData=Join-Path ${TemporaryDir} 'custom'
 
-###########################################################
+############################################################
 
 try
 {
-  #------------------------------------------------------
+  #---------------------------------------------------------
   Write-Output '[1/5] Downloading ISO file.'
-  #------------------------------------------------------
+  #---------------------------------------------------------
 
   $SourceISOInfo=$(New-Object System.Net.WebClient).DownloadString($SourceISOURL + 'SHA512SUMS')
   $SourceISOInfo=$SourceISOInfo.Split("`n") | Where-Object { $_ -Match $SourceISOPattern } | Select-Object -First 1
@@ -90,9 +90,9 @@ try
   Write-Output " - Source ISO File : $SourceISOURL$SourceISOName"
   Write-Output " - Source ISO Hash : $SourceISOHash"
 
-  #------------------------------------------------------
+  #---------------------------------------------------------
   Write-Output '[2/5] Extracting ISO content.'
-  #------------------------------------------------------
+  #---------------------------------------------------------
 
   $SourceISOData=$(Mount-DiskImage $SourceISOFile -PassThru | Get-Volume).DriveLetter
   & xcopy $($SourceISOData + ':\*.*') $CustomISOData /EI 2>&1 > $Null
@@ -101,9 +101,9 @@ try
   }
   Dismount-DiskImage $SourceISOFile | Out-Null
 
-  #------------------------------------------------------
+  #---------------------------------------------------------
   Write-Output '[3/5] Updating ISO content.'
-  #------------------------------------------------------
+  #---------------------------------------------------------
 
   $ScriptISOData=Join-Path $PSScriptRoot 'data/iso'
   $BootFlags='auto=true file=/cdrom/auto-seed'
@@ -111,8 +111,11 @@ try
   Copy-Item $SeedFile $(Join-Path $CustomISOData 'auto-seed')
   Copy-Item $DataFile $(Join-Path $CustomISOData 'auto-data')
 
+  Remove-Item $(Join-Path $CustomISOData 'boot/grub/grub.cfg')
   $(Get-Content $(Join-Path $ScriptISOData 'boot/grub/grub.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'boot/grub/grub.cfg')
+
+  Remove-Item $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
   $(Get-Content $(Join-Path $ScriptISOData 'isolinux/isolinux.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
 
@@ -124,9 +127,9 @@ try
       | Out-File $(Join-Path $CustomISOData 'md5sum.txt') -Append
   }
 
-  #------------------------------------------------------
+  #---------------------------------------------------------
   Write-Output '[4/5] Recreating ISO file.'
-  #------------------------------------------------------
+  #---------------------------------------------------------
 
   Push-Location $CustomISOData
   $mkisofs=Join-Path $PSScriptRoot 'data/mkisofs/mkisofs.exe'
@@ -145,9 +148,9 @@ try
   }
   Pop-Location
 
-  #------------------------------------------------------
+  #---------------------------------------------------------
   Write-Output '[5/5] Saving ISO file.'
-  #------------------------------------------------------
+  #---------------------------------------------------------
 
   if (-not $(Move-Item $CustomISOFile $OutputFile -PassThru)) {
     throw 'Cannot save ISO file!'

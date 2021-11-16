@@ -5,17 +5,17 @@
 # This software may be modified and distributed under the terms
 # of the MIT license. See the LICENSE file for details.
 #
-###########################################################
+############################################################
 
 set -o errexit -o nounset -o pipefail -o noclobber
 
-###########################################################
+############################################################
 
 declare -r Platform=$(uname -s)
 declare -r ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
 declare -r TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
 
-###########################################################
+############################################################
 
 # Regular expression used for selecting correct Debian ISO file.
 declare -r SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
@@ -23,25 +23,25 @@ declare -r SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
 # URL pointing to the directory from which Debian ISO should be downloaded.
 declare -r SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/'
 
-###########################################################
+############################################################
 
 declare -r SourceISOFile="${TemporaryDir}/source.iso"
 declare -r CustomISOFile="${TemporaryDir}/custom.iso"
 declare -r CustomISOData="${TemporaryDir}/custom"
 
-###########################################################
+############################################################
 
 pushd() {
   command pushd "$@" > /dev/null
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 popd() {
   command popd > /dev/null
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 Failure() {
   if [[ $# -ne 0 ]]; then
@@ -50,7 +50,7 @@ Failure() {
   exit 1
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 Success() {
   if [[ $# -ne 0 ]]; then
@@ -59,7 +59,7 @@ Success() {
   exit 0
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 Clean() {
   if [[ -d "${TemporaryDir}" ]]; then
@@ -68,7 +68,7 @@ Clean() {
   fi
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 ValidateInputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
@@ -82,7 +82,7 @@ ValidateInputFile() {
   echo -n "${Path}"
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 ValidatOutputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
@@ -97,7 +97,7 @@ ValidatOutputFile() {
   echo -n "${Path}"
 }
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 Help() {
 cat << EndOfHelp
@@ -122,16 +122,16 @@ Options:
 EndOfHelp
 }
 
-###########################################################
-###                       START                         ###
-###########################################################
+############################################################
+###                       START                          ###
+############################################################
 
 trap Clean EXIT
 trap Failure HUP INT QUIT TERM
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 # Parse command line arguments.
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 while [[ $# -gt 0 ]]
 do
@@ -153,9 +153,9 @@ declare -r SeedFile=${SeedFile:-"${ScriptRoot}/data/iso/auto-seed"}
 declare -r DataFile=${DataFile:-"${ScriptRoot}/data/iso/auto-data"}
 declare -r OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 # Check preconditions.
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 if [[ "${Platform}" == 'Darwin' ]] || [[ "${Platform}" == 'Linux' ]]; then
   command -v 'xorriso' >/dev/null 2>&1 || Failure 'Program "xorriso" is not installed!'
@@ -167,9 +167,9 @@ if [[ "${Test:-0}" != 0 ]]; then
   Success 'Platform is setup correctly!'
 fi
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 echo '[1/5] Downloading ISO file.'
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 if [[ "${Platform}" == 'Darwin' ]]; then
   declare -r SourceISOInfo=$(curl -s -L "${SourceISOURL}SHA512SUMS") \
@@ -205,16 +205,16 @@ fi
 echo " - Source ISO File : ${SourceISOURL}${SourceISOName}"
 echo " - Source ISO Hash : ${SourceISOHash}"
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 echo '[2/5] Extracting ISO content.'
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 mkdir -p "${CustomISOData}" && chmod 700 "${CustomISOData}"
 xorriso -osirrox on -indev "${SourceISOFile}" -extract / "${CustomISOData}" >/dev/null 2>&1
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 echo '[3/5] Updating ISO content.'
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 declare -r ScriptISOData="${ScriptRoot}/data/iso"
 declare -r BootFlags='auto=true file=/cdrom/auto-seed'
@@ -251,9 +251,9 @@ chmod u-w 'md5sum.txt'
 ln -s '.' 'debian'
 popd
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 echo '[4/5] Recreating ISO file.'
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 pushd "${CustomISOData}"
 xorriso -as mkisofs \
@@ -269,9 +269,9 @@ xorriso -as mkisofs \
     || Failure 'Cannot recreate ISO file!'
 popd
 
-#----------------------------------------------------------
+#-----------------------------------------------------------
 echo '[5/5] Saving ISO file.'
-#----------------------------------------------------------
+#-----------------------------------------------------------
 
 mv "${CustomISOFile}" "${OutputFile}"
 if [[ "${Platform}" == 'Darwin' ]]; then
