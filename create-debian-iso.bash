@@ -188,7 +188,8 @@ if [[ "${Platform}" == 'Darwin' ]]; then
   else
     Failure 'ISO download failed!'
   fi
-  if [[ "${SourceISOHash}" != "$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')" ]]; then
+  declare -r DownloadedISOHash=$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')
+  if [[ "${SourceISOHash}" != "${DownloadedISOHash}" ]]; then
     Failure 'Downloaded ISO is corrupted!'
   fi
 else
@@ -197,7 +198,8 @@ else
   else
     Failure 'ISO download failed!'
   fi
-  if [[ "${SourceISOHash}" != "$(sha512sum "${SourceISOFile}" | awk '{print $1}')" ]]; then
+  declare -r DownloadedISOHash=$(sha512sum "${SourceISOFile}" | awk '{print $1}')
+  if [[ "${SourceISOHash}" != "${DownloadedISOHash}" ]]; then
     Failure 'Downloaded ISO is corrupted!'
   fi
 fi
