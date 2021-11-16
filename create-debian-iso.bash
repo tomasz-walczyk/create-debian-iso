@@ -7,7 +7,7 @@
 #
 ###########################################################
 
-set -o errexit -o nounset -o pipefail
+set -o errexit -o nounset -o pipefail -o noclobber
 
 ###########################################################
 
@@ -226,13 +226,13 @@ popd
 
 pushd "${CustomISOData}/boot/grub"
 chmod u+w 'grub.cfg'
-sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/boot/grub/grub.cfg" > 'grub.cfg'
+rm 'grub.cfg' && sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/boot/grub/grub.cfg" > 'grub.cfg'
 chmod u-w 'grub.cfg'
 popd
 
 pushd "${CustomISOData}/isolinux"
 chmod u+w 'isolinux.cfg'
-sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/isolinux/isolinux.cfg" > 'isolinux.cfg'
+rm 'isolinux.cfg' && sed "s:{{FLAGS}}:${BootFlags}:g" "${ScriptISOData}/isolinux/isolinux.cfg" > 'isolinux.cfg'
 chmod u-w 'isolinux.cfg'
 popd
 
