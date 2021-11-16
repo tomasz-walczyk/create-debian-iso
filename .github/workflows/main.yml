@@ -20,6 +20,8 @@ on:
     paths-ignore:
     - LICENSE
     - README.md
+  schedule:
+    - cron: '0 0 * * *'
 jobs:
   test_linux:
     name: Test On Linux
