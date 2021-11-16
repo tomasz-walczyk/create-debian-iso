@@ -11,23 +11,23 @@ set -o errexit -o nounset -o pipefail -o noclobber
 
 ###########################################################
 
-readonly Platform=$(uname -s)
-readonly ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
-readonly TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
+declare -r Platform=$(uname -s)
+declare -r ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
+declare -r TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
 
 ###########################################################
 
 # Regular expression used for selecting correct Debian ISO file.
-readonly SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
+declare -r SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
 
 # URL pointing to the directory from which Debian ISO should be downloaded.
-readonly SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/'
+declare -r SourceISOURL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/'
 
 ###########################################################
 
-readonly SourceISOFile="${TemporaryDir}/source.iso"
-readonly CustomISOFile="${TemporaryDir}/custom.iso"
-readonly CustomISOData="${TemporaryDir}/custom"
+declare -r SourceISOFile="${TemporaryDir}/source.iso"
+declare -r CustomISOFile="${TemporaryDir}/custom.iso"
+declare -r CustomISOData="${TemporaryDir}/custom"
 
 ###########################################################
 
@@ -73,9 +73,9 @@ Clean() {
 ValidateInputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
   if [[ "${2:0:1}" != '/' ]]; then
-    local -r Path="${PWD}/${2}"
+    declare -r Path="${PWD}/${2}"
   else
-    local -r Path="${2}"
+    declare -r Path="${2}"
   fi
   [[ ! -f "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" does not exists!"
   [[ ! -r "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" is not readable!"
@@ -87,9 +87,9 @@ ValidateInputFile() {
 ValidatOutputFile() {
   [[ -z "${2}" ]] && Failure "Invalid argument: \"${1}\" : Empty value!"
   if [[ "${2:0:1}" != '/' ]]; then
-    local -r Path="${PWD}/${2}"
+    declare -r Path="${PWD}/${2}"
   else
-    local -r Path="${2}"
+    declare -r Path="${2}"
   fi
   [[ -e "${Path}" ]] && Failure "Invalid argument: \"${1}\" : File \"${Path}\" already exists!"
   [[ ! -e "$(dirname "${Path}")" ]] && Failure "Invalid argument: \"${1}\" : Directory \"$(dirname "${Path}")\" does not exists!"
@@ -149,9 +149,9 @@ esac
 shift
 done
 
-readonly SeedFile=${SeedFile:-"${ScriptRoot}/data/iso/auto-seed"}
-readonly DataFile=${DataFile:-"${ScriptRoot}/data/iso/auto-data"}
-readonly OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
+declare -r SeedFile=${SeedFile:-"${ScriptRoot}/data/iso/auto-seed"}
+declare -r DataFile=${DataFile:-"${ScriptRoot}/data/iso/auto-data"}
+declare -r OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
 
 #----------------------------------------------------------
 # Check preconditions.
@@ -172,15 +172,15 @@ echo '[1/5] Downloading ISO file.'
 #----------------------------------------------------------
 
 if [[ "${Platform}" == 'Darwin' ]]; then
-  readonly SourceISOInfo=$(curl -s -L "${SourceISOURL}SHA512SUMS") \
+  declare -r SourceISOInfo=$(curl -s -L "${SourceISOURL}SHA512SUMS") \
     || Failure 'Cannot find ISO file!'
 else
-  readonly SourceISOInfo=$(wget -q -O- "${SourceISOURL}SHA512SUMS") \
+  declare -r SourceISOInfo=$(wget -q -O- "${SourceISOURL}SHA512SUMS") \
     || Failure 'Cannot find ISO file!'
 fi
 
-readonly SourceISOHash=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $1}')
-readonly SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
+declare -r SourceISOHash=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $1}')
+declare -r SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
 
 if [[ "${Platform}" == 'Darwin' ]]; then
   if curl -s -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
@@ -216,8 +216,8 @@ xorriso -osirrox on -indev "${SourceISOFile}" -extract / "${CustomISOData}" >/de
 echo '[3/5] Updating ISO content.'
 #----------------------------------------------------------
 
-readonly ScriptISOData="${ScriptRoot}/data/iso"
-readonly BootFlags='auto=true file=/cdrom/auto-seed'
+declare -r ScriptISOData="${ScriptRoot}/data/iso"
+declare -r BootFlags='auto=true file=/cdrom/auto-seed'
 
 pushd "${CustomISOData}"
 cp "${SeedFile}" 'auto-seed' && chmod 444 'auto-seed'
@@ -275,9 +275,9 @@ echo '[5/5] Saving ISO file.'
 
 mv "${CustomISOFile}" "${OutputFile}"
 if [[ "${Platform}" == 'Darwin' ]]; then
-  readonly OutputHash="$(shasum -a 512 "${OutputFile}" | awk '{print $1}')"
+  declare -r OutputHash="$(shasum -a 512 "${OutputFile}" | awk '{print $1}')"
 else
-  readonly OutputHash="$(sha512sum "${OutputFile}" | awk '{print $1}')"
+  declare -r OutputHash="$(sha512sum "${OutputFile}" | awk '{print $1}')"
 fi
 
 echo " - Output ISO File : ${OutputFile}"
