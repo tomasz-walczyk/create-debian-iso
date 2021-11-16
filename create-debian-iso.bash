@@ -11,9 +11,17 @@ set -o errexit -o nounset -o pipefail -o noclobber
 
 ############################################################
 
-declare -r Platform=$(uname -s)
-declare -r ScriptRoot="$(cd "$(dirname "${0}")" && pwd)"
-declare -r TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
+# Name of the platform.
+Platform=$(uname -s)
+declare -r Platform
+
+# Path to the directory containing this script.
+ScriptRoot=$(cd "$(dirname "${0}")" && pwd)
+declare -r ScriptRoot
+
+# Path to the newly created temporary directory.
+TemporaryDir=$(mktemp -q -d '/tmp/create-debian-iso.bash.XXXXXXXXXXXXXXXX')
+declare -r TemporaryDir
 
 ############################################################
 
@@ -105,7 +113,7 @@ Synopsis:
   Script for creating unattended Debian installer.
 
 Usage:
-  create-debian-iso.bash [OPTION]...
+  $(basename "$0") [OPTIONS]...
 
 Description:
   Script will create Debian installer from the latest minimal CD available.
@@ -114,11 +122,11 @@ Description:
   ISO will be saved to the script directory unless --output-file was provided.
 
 Options:
-  --seed-file=<string>   : Path to the seed file.
-  --data-file=<string>   : Path to the data file.
-  --output-file=<string> : Path to the output file.
-  --test                 : Test if platform is setup correctly and exit.
-  --help                 : Display this help and exit.
+  --seed-file <path>   : Path to the seed file.
+  --data-file <path>   : Path to the data file.
+  --output-file <path> : Path to the output file.
+  --test               : Test if platform is setup correctly and exit.
+  --help               : Display this help and exit.
 EndOfHelp
 Success
 }
@@ -173,36 +181,41 @@ echo '[1/5] Downloading ISO file.'
 #-----------------------------------------------------------
 
 if [[ "${Platform}" == 'Darwin' ]]; then
-  declare -r SourceISOInfo=$(curl -s -L "${SourceISOURL}SHA512SUMS") \
-    || Failure 'Cannot find ISO file!'
+  SourceISOInfo=$(curl -s -f -L "${SourceISOURL}SHA512SUMS") \
+    || Failure 'Cannot find ISO file!' \
+  declare -r SourceISOInfo
 else
-  declare -r SourceISOInfo=$(wget -q -O- "${SourceISOURL}SHA512SUMS") \
+  SourceISOInfo=$(wget -q -O- "${SourceISOURL}SHA512SUMS") \
     || Failure 'Cannot find ISO file!'
+  declare -r SourceISOInfo
 fi
 
-declare -r SourceISOHash=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $1}')
-declare -r SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
+SourceISOHash=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $1}')
+declare -r SourceISOHash
+
+SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
+declare -r SourceISOName
 
 if [[ "${Platform}" == 'Darwin' ]]; then
-  if curl -s -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
+  if curl -s -f -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
     chmod 400 "${SourceISOFile}"
   else
     Failure 'ISO download failed!'
   fi
-  declare -r DownloadedISOHash=$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')
-  if [[ "${SourceISOHash}" != "${DownloadedISOHash}" ]]; then
-    Failure 'Downloaded ISO is corrupted!'
-  fi
+  DownloadedISOHash=$(shasum -a 512 "${SourceISOFile}" | awk '{print $1}')
+  declare -r DownloadedISOHash
 else
   if wget -q -O "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
     chmod 400 "${SourceISOFile}"
   else
     Failure 'ISO download failed!'
   fi
-  declare -r DownloadedISOHash=$(sha512sum "${SourceISOFile}" | awk '{print $1}')
-  if [[ "${SourceISOHash}" != "${DownloadedISOHash}" ]]; then
-    Failure 'Downloaded ISO is corrupted!'
-  fi
+  DownloadedISOHash=$(sha512sum "${SourceISOFile}" | awk '{print $1}')
+  declare -r DownloadedISOHash
+fi
+
+if [[ "${SourceISOHash}" != "${DownloadedISOHash}" ]]; then
+  Failure 'Downloaded ISO is corrupted!'
 fi
 
 echo " - Source ISO File : ${SourceISOURL}${SourceISOName}"
@@ -278,9 +291,11 @@ echo '[5/5] Saving ISO file.'
 
 mv "${CustomISOFile}" "${OutputFile}"
 if [[ "${Platform}" == 'Darwin' ]]; then
-  declare -r OutputHash="$(shasum -a 512 "${OutputFile}" | awk '{print $1}')"
+  OutputHash=$(shasum -a 512 "${OutputFile}" | awk '{print $1}')
+  declare -r OutputHash
 else
-  declare -r OutputHash="$(sha512sum "${OutputFile}" | awk '{print $1}')"
+  OutputHash=$(sha512sum "${OutputFile}" | awk '{print $1}')
+  declare -r OutputHash
 fi
 
 echo " - Output ISO File : ${OutputFile}"
