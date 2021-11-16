@@ -111,11 +111,8 @@ try
   Copy-Item $SeedFile $(Join-Path $CustomISOData 'auto-seed')
   Copy-Item $DataFile $(Join-Path $CustomISOData 'auto-data')
 
-  Remove-Item $(Join-Path $CustomISOData 'boot/grub/grub.cfg')
   $(Get-Content $(Join-Path $ScriptISOData 'boot/grub/grub.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'boot/grub/grub.cfg')
-
-  Remove-Item $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
   $(Get-Content $(Join-Path $ScriptISOData 'isolinux/isolinux.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
 
