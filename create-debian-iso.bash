@@ -166,7 +166,10 @@ declare -r OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
 #-----------------------------------------------------------
 
 if [[ "${Platform}" == 'Darwin' ]] || [[ "${Platform}" == 'Linux' ]]; then
-  command -v 'xorriso' >/dev/null 2>&1 || Failure 'Program "xorriso" is not installed!'
+	for RequiredCommand in xorriso; do
+		command -v "${RequiredCommand}" >/dev/null 2>&1 \
+			|| Failure "Program \"${RequiredCommand}\" is not installed!"
+	done
 else
   Failure 'Platform is not supported!'
 fi
