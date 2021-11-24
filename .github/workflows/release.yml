@@ -21,7 +21,6 @@ on:
 jobs:
   test_on_linux:
     name: Test On Linux
-    needs: check_version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
