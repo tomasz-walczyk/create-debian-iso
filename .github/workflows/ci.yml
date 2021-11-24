@@ -23,12 +23,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
 jobs:
-  check_version:
-    name: Check Version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
   test_on_linux:
     name: Test On Linux
     needs: check_version
@@ -72,13 +66,3 @@ jobs:
           Invoke-ScriptAnalyzer -Path .\CreateDebianISO.ps1 -EnableExit
       - name: Create Debian ISO
         run: powershell .\CreateDebianISO.ps1
-  create_release:
-    name: Create Release
-    needs:
-      - test_on_linux
-      - test_on_macos
-      - test_on_windows
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
