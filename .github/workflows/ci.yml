@@ -23,7 +23,7 @@ on:
   schedule:
     - cron: '0 0 * * *'
 jobs:
-  test_linux:
+  test_on_linux:
     name: Test On Linux
     runs-on: ubuntu-latest
     steps:
@@ -37,9 +37,9 @@ jobs:
         run: sudo apt-get install --assume-yes xorriso
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
-  test_macos:
+  test_on_macos:
     name: Test On MacOS
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
         run: brew install xorriso
       - name: Create Debian ISO
         run: bash create-debian-iso.bash
-  test_windows:
+  test_on_windows:
     name: Test On Windows
     runs-on: windows-latest
     steps:
