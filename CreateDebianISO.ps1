@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2021 Tomasz Walczyk
+# Copyright (C) 2022 Tomasz Walczyk
 #
 # This software may be modified and distributed under the terms
 # of the MIT license. See the LICENSE file for details.
@@ -52,6 +52,7 @@ param (
 ############################################################
 
 Set-StrictMode -Version Latest
+$ErrorActionPreference='Stop'
 
 ############################################################
 

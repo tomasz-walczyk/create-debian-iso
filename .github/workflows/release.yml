@@ -1,30 +1,68 @@
 #
-# Copyright (C) 2020-2021 Tomasz Walczyk
+# Copyright (C) 2022 Tomasz Walczyk
 #
 # This software may be modified and distributed under the terms
-# of the MIT license. See the LICENSE file for details.
+# of the GNU LESSER GENERAL PUBLIC LICENSE VERSION 3.0.
+# See the LICENSE file for details.
 #
 ############################################################
 
 name: Release
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Define env name'
-        required: true
-        default: 'prod'
-      branch:
-        description: 'Define branch name'
-        required: true
-        default: 'master'
+  push:
+    tags:
+      - 'v*'
 jobs:
-  test_on_linux:
-    name: Test On Linux
+  prepare:
+    name: Prepare
     runs-on: ubuntu-latest
+    outputs:
+      release_name: ${{ steps.check_version.outputs.release_name }}
+      release_version: ${{ steps.check_version.outputs.release_version }}
+      release_notes_file_name: ${{ steps.check_version.outputs.release_notes_file_name }}
+      release_notes_file_path: ${{ steps.check_version.outputs.release_notes_file_path }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Generate CMake Project
-        run: |
-          env | sort
+        with:
+          fetch-depth: 0
+      - name: Check Version
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/workflows/scripts/check-release-version.bash
+      - name: Upload Release Notes
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.check_version.outputs.release_notes_file_name }}
+          path: ${{ steps.check_version.outputs.release_notes_file_path }}
+          if-no-files-found: error
+  test:
+    name: Test
+    needs:
+      - prepare
+    uses: tomasz-walczyk/sha512-crypt/.github/workflows/test.yml@master
+    with:
+      package_version: ${{ needs.prepare.outputs.release_version }}
+  release:
+    name: Release
+    needs:
+      - prepare
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Release Notes
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ needs.prepare.outputs.release_notes_file_name }}
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          prerelease: false
+          commitish: ${{ github.sha }}
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ needs.prepare.outputs.release_name }}
+          body_path: ${{ needs.prepare.outputs.release_notes_file_name }}
