@@ -171,6 +171,6 @@ finally
         Dismount-DiskImage $SourceISOFile
       }
     }
-    Remove-Item $TemporaryDir -Recurse
+    Remove-Item $TemporaryDir -Recurse -Force
   }
 }
