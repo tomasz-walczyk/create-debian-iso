@@ -1,13 +1,10 @@
-![](https://github.com/tomasz-walczyk/create-debian-iso/workflows/CI/badge.svg?event=push)
-
+[![Test](https://github.com/tomasz-walczyk/create-debian-iso/actions/workflows/test.yml/badge.svg)](https://github.com/tomasz-walczyk/create-debian-iso/actions/workflows/test.yml)
+[![Release](https://github.com/tomasz-walczyk/create-debian-iso/actions/workflows/release.yml/badge.svg)](https://github.com/tomasz-walczyk/create-debian-iso/actions/workflows/release.yml)
+___
 Script for creating unattended Debian installer.
 ___
 #### Linux
 ```bash
-# Clone Git repository:
-git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
-cd create-debian-iso
-
 # Install dependencies:
 sudo apt-get install --assume-yes xorriso
 
@@ -16,10 +13,6 @@ bash create-debian-iso.bash
 ```
 #### MacOS
 ```bash
-# Clone Git repository:
-git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
-cd create-debian-iso
-
 # Install dependencies:
 brew install xorriso
 
@@ -28,10 +21,6 @@ bash create-debian-iso.bash
 ```
 #### Windows
 ```powershell
-# Clone Git repository:
-git clone 'https://github.com/tomasz-walczyk/create-debian-iso.git'
-Set-Location create-debian-iso
-
 # Change execution policy:
 Set-ExecutionPolicy Bypass -Scope Process
 

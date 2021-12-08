@@ -41,9 +41,7 @@ jobs:
     name: Test
     needs:
       - prepare
-    uses: tomasz-walczyk/sha512-crypt/.github/workflows/test.yml@master
-    with:
-      package_version: ${{ needs.prepare.outputs.release_version }}
+    uses: tomasz-walczyk/create-debian-iso/.github/workflows/test.yml@master
   release:
     name: Release
     needs:
