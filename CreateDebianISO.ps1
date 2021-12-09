@@ -52,7 +52,6 @@ param (
 ############################################################
 
 Set-StrictMode -Version Latest
-#$ErrorActionPreference='Stop'
 
 ############################################################
 
@@ -163,18 +162,14 @@ catch
 {
   Write-Error $_.Exception.Message
 }
-# finally
-# {
-#   if (Test-Path $TemporaryDir) {
-#     if (Test-Path $SourceISOFile) {
-#       Get-DiskImage $SourceISOFile
-#       Get-DiskImage $SourceISOFile | Get-Volume
-#       if (Get-DiskImage $SourceISOFile | Get-Volume) {
-#         Dismount-DiskImage $SourceISOFile
-#       }
-#     }
-#     Get-DiskImage $SourceISOFile
-#     Get-DiskImage $SourceISOFile | Get-Volume
-#     Remove-Item $TemporaryDir -Recurse -Force
-#   }
-# }
+finally
+{
+  if (Test-Path $TemporaryDir) {
+    if (Test-Path $SourceISOFile) {
+      if (Get-DiskImage $SourceISOFile | Get-Volume) {
+        Dismount-DiskImage $SourceISOFile
+      }
+    }
+    Remove-Item $TemporaryDir -Recurse
+  }
+}
