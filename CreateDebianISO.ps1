@@ -52,7 +52,7 @@ param (
 ############################################################
 
 Set-StrictMode -Version Latest
-$ErrorActionPreference='Stop'
+#$ErrorActionPreference='Stop'
 
 ############################################################
 
