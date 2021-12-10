@@ -12,7 +12,7 @@ set -o errexit -o nounset -o pipefail -o noclobber
 ############################################################
 
 # Name of the platform.
-Platform=$(uname -s)
+Platform=$(uname -s | tr '[:upper:]' '[:lower:]')
 declare -r Platform
 
 # Path to the directory containing this script.
@@ -165,7 +165,7 @@ declare -r OutputFile=${OutputFile:-"${PWD}/$(date '+auto-debian-%s.iso')"}
 # Check preconditions.
 #-----------------------------------------------------------
 
-if [[ "${Platform}" == 'Darwin' ]] || [[ "${Platform}" == 'Linux' ]]; then
+if [[ "${Platform}" == 'darwin' ]] || [[ "${Platform}" == 'linux' ]]; then
   command -v 'xorriso' >/dev/null 2>&1  \
     || Failure 'Program "xorriso" is not installed!'
 else
@@ -180,7 +180,7 @@ fi
 echo '[1/5] Downloading ISO file.'
 #-----------------------------------------------------------
 
-if [[ "${Platform}" == 'Darwin' ]]; then
+if [[ "${Platform}" == 'darwin' ]]; then
   SourceISOInfo=$(curl -s -f -L "${SourceISOURL}SHA512SUMS") \
     || Failure 'Cannot find ISO file!' \
   declare -r SourceISOInfo
@@ -196,7 +196,7 @@ declare -r SourceISOHash
 SourceISOName=$(echo -n "${SourceISOInfo}" | grep -E "${SourceISOPattern}" | awk '{print $2}')
 declare -r SourceISOName
 
-if [[ "${Platform}" == 'Darwin' ]]; then
+if [[ "${Platform}" == 'darwin' ]]; then
   if curl -s -f -L -o "${SourceISOFile}" "${SourceISOURL}${SourceISOName}"; then
     chmod 400 "${SourceISOFile}"
   else
@@ -257,7 +257,7 @@ chmod u+w 'md5sum.txt'
 rm 'debian' 'md5sum.txt'
 find . -type f -follow | while IFS='' read -r File
 do
-  if [[ "${Platform}" == 'Darwin' ]]; then
+  if [[ "${Platform}" == 'darwin' ]]; then
     md5 -r "${File}" >> 'md5sum.txt'
   else
     md5sum "${File}" >> 'md5sum.txt'
@@ -290,7 +290,7 @@ echo '[5/5] Saving ISO file.'
 #-----------------------------------------------------------
 
 mv "${CustomISOFile}" "${OutputFile}"
-if [[ "${Platform}" == 'Darwin' ]]; then
+if [[ "${Platform}" == 'darwin' ]]; then
   OutputHash=$(shasum -a 512 "${OutputFile}" | awk '{print $1}')
   declare -r OutputHash
 else
