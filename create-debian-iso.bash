@@ -147,11 +147,11 @@ case "${1}" in
   --help) Help; Success;;
   --test) declare -r Test=1;;
   --seed-file=*) SeedFile=${1#*=}; ValidateInputFile "${1%%=*}" "${SeedFile}";;
-  --seed-file) SeedFile=${2-''}; ValidateInputFile "${1}" "${SeedFile}";;
+  --seed-file) SeedFile=${2-''}; ValidateInputFile "${1}" "${SeedFile}"; shift;;
   --data-file=*) DataFile=${1#*=}; ValidateInputFile "${1%%=*}" "${DataFile}";;
-  --data-file) DataFile=${2-''}; ValidateInputFile "${1}" "${DataFile}";;
+  --data-file) DataFile=${2-''}; ValidateInputFile "${1}" "${DataFile}"; shift;;
   --output-file=*) OutputFile=${1#*=}; ValidatOutputFile "${1%%=*}" "${OutputFile}";;
-  --output-file) OutputFile=${2-''}; ValidatOutputFile "${1}" "${OutputFile}";;
+  --output-file) OutputFile=${2-''}; ValidatOutputFile "${1}" "${OutputFile}"; shift;;
   *) Failure "Invalid argument: \"${1}\" : Not supported!";;
 esac
 shift
