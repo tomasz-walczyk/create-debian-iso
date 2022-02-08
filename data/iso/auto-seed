@@ -56,6 +56,8 @@ d-i apt-setup/cdrom/set-double boolean false
 
 ### Package selection:
 d-i pkgsel/upgrade select full-upgrade
+
+### Popularity contest:
 popularity-contest popularity-contest/participate boolean false
 
 ### Boot loader installation:
