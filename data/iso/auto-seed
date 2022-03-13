@@ -14,6 +14,7 @@ d-i keyboard-configuration/xkb-keymap select pl
 d-i keyboard-configuration/toggle select No toggling
 
 ### Network configuration:
+d-i netcfg/enable boolean true
 d-i netcfg/choose_interface select auto
 d-i netcfg/wireless_wep string
 d-i hw-detect/load_firmware boolean true
@@ -37,13 +38,15 @@ d-i partman-md/confirm_nooverwrite boolean true
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-auto-lvm/guided_size string max
+d-i partman-auto-lvm/new_vg_name string debian
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 
 ### Base system installation:
-d-i base-installer/install-recommends boolean true
+d-i base-installer/install-recommends boolean false
 d-i base-installer/kernel/image string linux-image-amd64
 
 ### Apt setup:
@@ -55,7 +58,8 @@ d-i apt-setup/cdrom/set-next boolean false
 d-i apt-setup/cdrom/set-double boolean false
 
 ### Package selection:
-d-i pkgsel/upgrade select full-upgrade
+d-i pkgsel/upgrade select none
+d-i pkgsel/update-policy select none
 
 ### Popularity contest:
 popularity-contest popularity-contest/participate boolean false
