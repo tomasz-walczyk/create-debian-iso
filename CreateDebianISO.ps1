@@ -55,6 +55,22 @@ Set-StrictMode -Version Latest
 
 ############################################################
 
+function RecalculateMD5Sum {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms', '')]
+  param (
+    [string[]]$CustomISOData
+  )
+  Remove-Item $(Join-Path $CustomISOData 'md5sum.txt')
+  $CustomISODataHash=Get-ChildItem $CustomISOData -Recurse `
+    | Where-Object { Test-Path $_.FullName -PathType Leaf } | Get-FileHash -Algorithm MD5
+  foreach ($Hash in $CustomISODataHash) {
+    $Hash.Hash.ToLower() + '  .' + $Hash.Path.Replace($CustomISOData, '').Replace('\', '/') `
+      | Out-File $(Join-Path $CustomISOData 'md5sum.txt') -Append
+  }
+}
+
+############################################################
+
 # Regular expression used for selecting correct Debian ISO file.
 $SourceISOPattern='(debian-)[0-9\.]+(-).+(-netinst.iso)'
 
@@ -116,14 +132,7 @@ try
   $(Get-Content $(Join-Path $ScriptISOData 'isolinux/isolinux.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
 
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms', '')]
-  Remove-Item $(Join-Path $CustomISOData 'md5sum.txt')
-  $CustomISODataHash=Get-ChildItem $CustomISOData -Recurse `
-    | Where-Object { Test-Path $_.FullName -PathType Leaf } | Get-FileHash -Algorithm MD5
-  foreach ($Hash in $CustomISODataHash) {
-    $Hash.Hash.ToLower() + '  .' + $Hash.Path.Replace($CustomISOData, '').Replace('\', '/') `
-      | Out-File $(Join-Path $CustomISOData 'md5sum.txt') -Append
-  }
+  RecalculateMD5Sum $CustomISOData
 
   #---------------------------------------------------------
   Write-Output '[4/5] Recreating ISO file.'
