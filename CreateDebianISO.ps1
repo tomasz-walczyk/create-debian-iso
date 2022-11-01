@@ -116,6 +116,7 @@ try
   $(Get-Content $(Join-Path $ScriptISOData 'isolinux/isolinux.cfg')).replace('{{FLAGS}}', $BootFlags) `
     | Set-Content $(Join-Path $CustomISOData 'isolinux/isolinux.cfg')
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingBrokenHashAlgorithms', '')]
   Remove-Item $(Join-Path $CustomISOData 'md5sum.txt')
   $CustomISODataHash=Get-ChildItem $CustomISOData -Recurse `
     | Where-Object { Test-Path $_.FullName -PathType Leaf } | Get-FileHash -Algorithm MD5
