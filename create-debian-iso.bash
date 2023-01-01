@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317
 #
 # Copyright (C) 2022 Tomasz Walczyk
 #
