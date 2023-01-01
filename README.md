@@ -19,7 +19,6 @@ brew install xorriso
 # Create Debian ISO:
 bash create-debian-iso.bash
 ```
-
 #### Windows
 ```powershell
 # Change execution policy:
