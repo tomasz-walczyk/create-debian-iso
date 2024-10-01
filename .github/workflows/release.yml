@@ -23,7 +23,7 @@ jobs:
       release_notes_file_path: ${{ steps.check_version.outputs.release_notes_file_path }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check Version
@@ -32,11 +32,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash .github/workflows/scripts/check-release-version.bash
       - name: Upload Release Notes
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.check_version.outputs.release_notes_file_name }}
           path: ${{ steps.check_version.outputs.release_notes_file_path }}
-          if-no-files-found: error
   test:
     name: Test
     needs:
@@ -50,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Release Notes
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.prepare.outputs.release_notes_file_name }}
       - name: Create Release
